@@ -27,7 +27,7 @@ int main(void) {
 }
 
 void expression(void) {
-    
+
 }
 
 int getch(void);
@@ -41,34 +41,24 @@ int gettoken(void) {
 
     while (isspace(c = getch()) && c != '\n')
         ;
+    
+    *tp++ = c;
+    *tp = '\0';
 
-    if (c == '-') {
-        *tp++ = c;
+    if (c == '-') {    
         if (!isdigit(next = getch())) { // Check for arithmetic operation or negative number
             ungetch(next);
             *tp = '\0';
             return tokentype = OPERATION;
         }
-        c = next;
+        *tp++ = c = next;
     }
-    else if (c == '+' || c == '*' || c == '/') {
-        *tp++ = c;
-        *tp = '\0';
-        return tokentype = OPERATION;
-    }
-    else if (c == ')' || c == '(') {
-        *tp++ = c;
-        *tp = '\0';
-        return tokentype = PARENTHESES;
-    }
-    else if (c == '^') {
-        *tp++ = c;
-        *tp = '\0';
-        return tokentype = EXPONENT;
-    }
+    else if (c == '+' || c == '*' || c == '/')  return tokentype = OPERATION;
+    else if (c == ')' || c == '(')              return tokentype = PARENTHESES;
+    else if (c == '^')                          return tokentype = EXPONENT;
     
     if (isdigit(c)) {
-        for (*tp++ = c; isdigit(c = getch()); *tp++ = c)
+        for ( ; isdigit(c = getch()); *tp++ = c)
             ;
 
         if (c == '.') *tp++ = c;
@@ -83,16 +73,16 @@ int gettoken(void) {
             for (*tp++ = c; isdigit(c = getch()); *tp++ = c)
                 ;
             *tp = '\0';
-            ungetch(c);
         }
         else {
             *tp++ = '0';
             *tp = '\0';
         }
+        ungetch(c);
         return tokentype = OPERAND;
     }
     else if (isalpha(c)) {
-        for (*tp++ = c; isalnum(c = getch()); *tp++ = c)
+        for ( ; isalnum(c = getch()); *tp++ = c)
             ;
         *tp = '\0';
         ungetch(c);
