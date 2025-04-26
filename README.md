@@ -2,13 +2,13 @@
 > An algebraic calculator
 
 ## Outline
-I chose to create this project to explore Extended BNF Notation for grammars. This formal grammar defines the syntax rules that govern input on standard algebraic calculators.  
+I chose to create this project to explore Extended BNF Notation for grammars and Recursive Descent Parsing of strings. This formal grammar defines the syntax rules that govern input on this standard algebraic calculator.  
 The expression structure goes as follows:
 
 ```
 // Expression Structure    
 <expression> ::= <term> | <expression> "+" <term> | <expression> "-" <term>
-<term> ::= <factor> | <term> "*" <factor> | <term> "/" <factor>
+<term> ::= <factor> | <term> "*" <factor> | <term> "/" <factor> | <term> <factor>
 <factor> ::= <power> | "-" <factor>
 <power> ::= <atom> | <atom> "^" <factor>
 <atom> ::= <number> | <function-call> | "(" <expression> ")"
