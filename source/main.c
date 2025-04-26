@@ -26,68 +26,81 @@ int main(void) {
     return 0;
 }
 
+void expression(void) {
+    
+}
+
 int getch(void);
 void ungetch(int c);
 
 // gettoken : Get the next token from the input
 int gettoken(void) {
     char c = 0;
+    char next = 0;
     char *tp = token;
 
     while (isspace(c = getch()) && c != '\n')
         ;
-    
-    switch (c) {
-    case '(':
-    case ')':
+
+    if (c == '-') {
         *tp++ = c;
-        *tp = '\0';
-        return tokentype = PARENTHESES;
-    case '+':
-    case '-':
-    case '*':
-    case '/':
+        if (!isdigit(next = getch())) { // Check for arithmetic operation or negative number
+            ungetch(next);
+            *tp = '\0';
+            return tokentype = OPERATION;
+        }
+        c = next;
+    }
+    else if (c == '+' || c == '*' || c == '/') {
         *tp++ = c;
         *tp = '\0';
         return tokentype = OPERATION;
-    case '^':
+    }
+    else if (c == ')' || c == '(') {
+        *tp++ = c;
+        *tp = '\0';
+        return tokentype = PARENTHESES;
+    }
+    else if (c == '^') {
         *tp++ = c;
         *tp = '\0';
         return tokentype = EXPONENT;
-    default:
-        if (isdigit(c)) {   // Collect number token
-            for (*tp++ = c; isdigit(c = getch()); *tp++ = c)
-                ;
-            
-            if (c == '.') *tp++ = c;
-            else return tokentype = OPERAND;
-            
-            // collect decimal portion
-            if (isdigit(c = getch())) {
-                for (*tp++ = c; isdigit(c = getch()); *tp++ = c)
-                    ;
-                *tp = '\0';
-                ungetch(c);
-            }
-            else {
-                *tp++ = '0';
-                *tp = '\0';
-            }
+    }
+    
+    if (isdigit(c)) {
+        for (*tp++ = c; isdigit(c = getch()); *tp++ = c)
+            ;
 
+        if (c == '.') *tp++ = c;
+        else {
+            *tp = '\0';
+            ungetch(c);
             return tokentype = OPERAND;
         }
-        else if (isalnum(c)) {  // collect function
-            for (*tp++ = c; isalnum(c = getch()); *tp++ = c)
+
+        // collect decimal portion
+        if (isdigit(c = getch())) {
+            for (*tp++ = c; isdigit(c = getch()); *tp++ = c)
                 ;
             *tp = '\0';
             ungetch(c);
-            return tokentype = FUNCTION;
         }
         else {
-            tokentype = NONE;
-            return c;
+            *tp++ = '0';
+            *tp = '\0';
         }
+        return tokentype = OPERAND;
     }
+    else if (isalpha(c)) {
+        for (*tp++ = c; isalnum(c = getch()); *tp++ = c)
+            ;
+        *tp = '\0';
+        ungetch(c);
+        return tokentype = FUNCTION;
+    }
+
+    tokentype = NONE;
+    return c;
 }
 
 
