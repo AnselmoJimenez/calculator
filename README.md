@@ -2,8 +2,7 @@
 > An algebraic calculator
 
 ## Outline
-I chose to create this project to explore Extended BNF Notation for grammars and Recursive Descent Parsing of strings. This formal grammar defines the syntax rules that govern input on this standard algebraic calculator.  
-The expression structure goes as follows:
+I chose to create this project to explore **Extended BNF Notation** for grammars and **Recursive Descent Parsing** of strings. A recursive descent parser is a top-down parser that processes input based on a set of recursive functions, where each function corresponds to a grammar rule. It parses the input from left to right, constructing a parse tree by matching the grammar’s production rules.
 
 ```
 // Expression Structure    
@@ -22,6 +21,25 @@ The expression structure goes as follows:
 // Functions
 <function-call> ::= <function-name> "(" <expression> ")"
 <function-name> ::= "sin" | "cos" | "tan" | "log" | "ln" | "sqrt" | "abs" | "exp" | "floor" | "ceil"
+```
+
+After removing left-recursion and tokenization of the grammar, we are left with the following notation:
+> ε (epsilon) means "Empty"
+
+```
+<expression> ::= <term> <expression-tail>
+<expression-tail> ::= OPERATION(+) <term> <expression-tail> | OPERATION(-) <term> <expression-tail> | ε
+
+<term> ::= <factor> <term-tail>
+<term-tail> ::= OPERATION(*) <factor> <term-tail> | OPERATION(/) <factor> <term-tail> | <factor> <term-tail> | ε
+
+<factor> ::= <power> | <negation>
+<negation> ::= OPERATION(-) <factor>
+
+<power> ::= <atom> <power-tail>
+<power-tail> ::= EXPONENT <factor> | ε
+
+<atom> ::= OPERAND | FUNCTION PARENTHESES(<) <expression> PARENTHESES(>) | PARENTHESES(<) <expression> PARENTHESES(>)
 ```
 
 ## Usage
