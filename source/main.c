@@ -25,23 +25,65 @@ double function(void);
 int gettoken(void);
 
 int main(void) {
+    double result = 0;
     while (gettoken() != EOF) {
-        // long int result = expression();
-        printf("Token: %s\n", token);
-
+        result = expression();
+        if (token[0] == '\n')
+            printf("\t=%.4lf\n", result);
         memset(token, '\0', MAXTOKENLEN);
     }
 
     return 0;
 }
 
-double expression(void) {}
-double term(void) {}
-double factor(void) {}
+void ungets(char *s);
+
+// expression : Handles addition
+double expression(void) {
+    switch (tokentype) {
+        case OPERAND:
+        case FUNCTION:
+        case EXPONENT:
+        case PARENTHESES:
+            return term();
+        case OPERATION:
+            double quantity = expression();
+            gettoken();
+            if (token[0] == '+') return quantity + term();
+            else if (token[0] == '-') return quantity - term();
+    }
+}
+
+// term : handles multiplication and division
+double term(void) {
+    switch (tokentype) {
+        case OPERAND:
+        case FUNCTION:
+        case EXPONENT:
+        case PARENTHESES:
+            return power();
+        case OPERATION:
+            double quantity = term();
+            gettoken();
+            if (token[0] == '*') return quantity * power();
+            else if (token[0] == '/') return quantity / power();
+            else return quantity * power();
+    }
+}
 
 // power : evaluate exponents and return their value
+//         atom or atom ^ factor
 double power(void) {
-    
+    double quantity = atom();
+
+    // check if raising the quantity to a power
+    if (gettoken() != EXPONENT && token[0] != '^') {
+        ungets(token);
+        return quantity;
+    }
+
+    tokentype = gettoken();
+    return pow(quantity, term());
 }
 
 // atom : Return the basic building block of an expression
@@ -51,12 +93,10 @@ double atom(void) {
         case OPERAND:   return atof(token);
         case FUNCTION:  return function();
         case PARENTHESES:
-            enum tokens type = UNKNOWN;
-
             // syntax checks
             if (token[0] == '(') {
                 double quantity = expression();
-                if ((type = gettoken()) != PARENTHESES && token[0] != ')') {
+                if (gettoken() != PARENTHESES && token[0] != ')') {
                     printf("Atom: Syntax Error: Unclosed Parenthesis \'(\'\n");
                     return -1;
                 }
@@ -88,15 +128,14 @@ double function(void) {
     }
     
     // Syntax Checks
-    enum tokens type = UNKNOWN;
-    if ((type = gettoken()) != PARENTHESES && token[0] != '(') {
+    if (gettoken() != PARENTHESES && token[0] != '(') {
         printf("Function: Syntax Error: Missing Initialization \'(\'\n");
         return -1;
     }
 
     double quantity = expression();
 
-    if ((type = gettoken()) != PARENTHESES && token[0] != ')') {
+    if (gettoken() != PARENTHESES && token[0] != ')') {
         printf("Function: Syntax Error: Unclosed Parenthesis \'(\'\n");
         return -1;
     }
@@ -190,11 +229,15 @@ int getch(void) {
 
 // ungetch : push a character back on to the input
 void ungetch(int c) {
-    if (cbuffer + MAXBUFFER - cbp <= 0) printf("cbuffer: Stack is full");
+    if (cbuffer + MAXBUFFER - cbp <= 0) printf("ungetch: Overflow Error: Stack is full");
     else *cbp++ = c;
 }
 
 // ungets : push a string back on to the input
 void ungets(char *s) {
-    // TODO
+    if (cbuffer + MAXBUFFER < cbp - strlen(s)) printf("ungets: Overflow Error: Stack is full");
+    else {
+        int length = strlen(s);
+        while (length-- > 0) *cbp++ = *s++;
+    }
 }
