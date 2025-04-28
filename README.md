@@ -31,10 +31,9 @@ After removing left-recursion and tokenization of the grammar, we are left with 
 <expression-tail> ::= OPERATION(+) <term> <expression-tail> | OPERATION(-) <term> <expression-tail> | ε
 
 <term> ::= <factor> <term-tail>
-<term-tail> ::= OPERATION(*) <factor> <term-tail> | OPERATION(/) <factor> <term-tail> | <factor> <term-tail> | ε
+<term-tail> ::= OPERATION(*) <factor> <term-tail> | OPERATION(/) <factor> <term-tail> | <factor> <factor> | ε
 
-<factor> ::= <power> | <negation>
-<negation> ::= OPERATION(-) <factor>
+<factor> ::= <power> | OPERATION(-) <factor>
 
 <power> ::= <atom> <power-tail>
 <power-tail> ::= EXPONENT <factor> | ε
