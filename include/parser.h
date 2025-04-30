@@ -6,13 +6,12 @@
 #define MAXTOKENLEN 50
 
 double expr(void);
-double exprtail(void);
+double exprtail(double);
 double term(void);
-double termtail(void);
+double termtail(double);
 double factor(void);
-double negation(void);
 double power(void);
-double powertail(void);
+double powertail(double);
 double atom(void);
 double function(void);
 
