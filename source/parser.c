@@ -17,18 +17,18 @@ void ungets(char *);
 void printstack(void);
 
 double expr(void) {
-    return exprtail(atom());
+    return exprtail(term());
 }
 
 double exprtail(double prev) {
     gettoken();
     if (current.token[0] == '+') {
         gettoken();    
-        return exprtail(prev + atom()); // + term()
+        return exprtail(prev + term()); // + term()
     }
     else if (current.token[0] == '-') {
         gettoken();   
-        return exprtail(prev - atom()); // - term()
+        return exprtail(prev - term()); // - term()
     }
     else {
         ungets(current.token);
@@ -37,20 +37,24 @@ double exprtail(double prev) {
 }
 
 double term(void) {
-    return termtail(factor());
+    return termtail(atom()); // termtail(factor())
 }
 
 double termtail(double prev) {
     gettoken();
-    if (current.token[0] == '*')       
-        return termtail(prev * factor());
-    else if (current.token[0] == '/')   
-        return termtail(prev / factor());
-    else if (current.tokentype == PARENTHESES)
-        return factor() * factor();  
+    if (current.token[0] == '*') {
+        gettoken();
+        return termtail(prev * atom()); // * factor()
+    }
+    else if (current.token[0] == '/') {
+        gettoken();
+        return termtail(prev / atom()); // / factor()
+    }
+    else if (current.tokentype == PARENTHESES) {    // TODO: FIX
+        return atom() * atom();  // factor() * factor()
+    }
     else {
         ungets(current.token);
-        gettoken();
         return prev;
     }
 }
@@ -117,9 +121,15 @@ double function(void) {
     gettoken();
     double result = 0;
     switch (i) {
-        case SIN: result = sin(expr());
-        case COS: result = cos(expr());
-        case TAN: result = tan(expr());
+        case SIN: 
+            result = sin(expr());
+            break;
+        case COS: 
+            result = cos(expr());
+            break;
+        case TAN: 
+            result = tan(expr());
+            break;
     }
 
     gettoken();
