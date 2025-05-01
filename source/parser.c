@@ -17,24 +17,21 @@ void ungets(char *);
 void printstack(void);
 
 double expr(void) {
-    ungets("sin");
-    printstack();
-    gettoken();
-    printf("Token: %s - tokentype: %d", current.token, current.tokentype);
-
-    return 0;
-    // return exprtail(atom());
+    return exprtail(atom());
 }
 
 double exprtail(double prev) {
     gettoken();
-    if (current.token[0] == '+')        
+    if (current.token[0] == '+') {
+        gettoken();    
         return exprtail(prev + atom()); // + term()
-    else if (current.token[0] == '-')   
+    }
+    else if (current.token[0] == '-') {
+        gettoken();   
         return exprtail(prev - atom()); // - term()
+    }
     else {
         ungets(current.token);
-        gettoken();
         return prev;
     }
 }
@@ -217,7 +214,6 @@ void ungets(char *s) {
         int length = strlen(s);
         s += length - 1;
         while (length-- > 0) {
-            printf("Storing: %c\n", *s);
             *cbp++ = *s--;
         }
     }

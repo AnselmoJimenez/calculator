@@ -3,6 +3,10 @@
 #include "../include/parser.h"
 
 int main(void) {
-    expr();
+    while (gettoken() != EOF) {
+        double result = expr();
+        if (gettoken() == '\n')
+            printf("\t=%.4lf\n", result);
+    }
     return 0;
 }
