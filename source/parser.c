@@ -24,11 +24,11 @@ double exprtail(double prev) {
     gettoken();
     if (current.token[0] == '+') {
         gettoken();    
-        return exprtail(prev + term()); // + term()
+        return exprtail(prev + term());
     }
     else if (current.token[0] == '-') {
         gettoken();   
-        return exprtail(prev - term()); // - term()
+        return exprtail(prev - term());
     }
     else {
         ungets(current.token);
@@ -44,15 +44,14 @@ double termtail(double prev) {
     gettoken();
     if (current.token[0] == '*') {
         gettoken();
-        return termtail(prev * atom()); // * factor()
+        return termtail(prev * atom()); // ... * factor()
     }
     else if (current.token[0] == '/') {
         gettoken();
-        return termtail(prev / atom()); // / factor()
+        return termtail(prev / atom()); // ... / factor()
     }
-    else if (current.tokentype == PARENTHESES) {    // TODO: FIX
-        return atom() * atom();  // factor() * factor()
-    }
+    else if (current.token[0] == '(' || current.tokentype == OPERAND || current.tokentype == FUNCTION)
+        return prev * atom();  // factor() * factor()
     else {
         ungets(current.token);
         return prev;
