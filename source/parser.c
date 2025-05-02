@@ -1,7 +1,6 @@
 #include <stdio.h>
 
 #include "../include/parser.h"
-// #include "../include/stack.h"
 
 enum types { UNKNOWN, PARENTHESES, OPERAND, OPERATION, EXPONENT, FUNCTION, END};
 
@@ -37,21 +36,21 @@ double exprtail(double prev) {
 }
 
 double term(void) {
-    return termtail(atom()); // termtail(factor())
+    return termtail(factor());
 }
 
 double termtail(double prev) {
     gettoken();
     if (current.token[0] == '*') {
         gettoken();
-        return termtail(prev * atom()); // ... * factor()
+        return termtail(prev * factor()); 
     }
     else if (current.token[0] == '/') {
         gettoken();
-        return termtail(prev / atom()); // ... / factor()
+        return termtail(prev / factor());
     }
     else if (current.token[0] == '(' || current.tokentype == OPERAND || current.tokentype == FUNCTION)
-        return prev * atom();  // factor() * factor()
+        return prev * factor();
     else {
         ungets(current.token);
         return prev;
@@ -59,13 +58,12 @@ double termtail(double prev) {
 }
 
 double factor(void) {
-    gettoken();
-    if (current.token[0] == '-')
-        return -1 * factor();
-    else {
-        ungets(current.token);
-        gettoken();
+    if (current.tokentype == OPERAND || current.tokentype == FUNCTION || current.tokentype == PARENTHESES)
         return power();
+    
+    if (current.tokentype == OPERATION && current.token[0] == '-') {
+        gettoken();
+        return -1 * factor();
     }
 }
 
@@ -75,11 +73,12 @@ double power(void) {
 
 double powertail(double prev) {
     gettoken();
-    if (current.tokentype == EXPONENT)
+    if (current.token[0] == '^') {
+        gettoken();
         return pow(prev, factor());
+    }
     else {
         ungets(current.token);
-        gettoken();
         return prev;
     }
 }
@@ -226,12 +225,4 @@ void ungets(char *s) {
             *cbp++ = *s--;
         }
     }
-}
-
-void printstack(void) {
-    char *sp = cbuffer;
-    printf("<");
-    while (*sp != '\0')
-        printf("%c, ", *sp++);
-    printf("\b\b>\n");
 }
