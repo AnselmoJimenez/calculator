@@ -1,6 +1,7 @@
 #include <stdio.h>
 
 #include "../include/parser.h"
+#include "../include/mylib.h"
 
 enum types { UNKNOWN, PARENTHESES, OPERAND, OPERATION, EXPONENT, FUNCTION, END};
 
@@ -102,8 +103,8 @@ double atom(void) {
     }
 }
 
-enum funcs { SIN, COS, TAN, INVALID };
-static const char *supported[] = { "sin", "cos", "tan" };
+enum funcs { SIN, COS, TAN, SQRT, INVALID };
+static const char *supported[] = { "sin", "cos", "tan", "sqrt" };
 
 double function(void) {
     // Check that input function is valid
@@ -127,6 +128,9 @@ double function(void) {
             break;
         case TAN: 
             result = tan(expr());
+            break;
+        case SQRT: 
+            result = sqrtf(expr());
             break;
     }
 
