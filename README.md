@@ -1,8 +1,10 @@
-# Calculator
-> An algebraic calculator
+# Algebraic Calculator
+> The classic first program everyone builds but with a twist
 
 ## Outline
 I chose to create this project to explore **Extended BNF Notation** for grammars and **Recursive Descent Parsing** of strings. A recursive descent parser is a top-down parser that processes input based on a set of recursive functions, where each function corresponds to a grammar rule. It parses the input from left to right, constructing a parse tree by matching the grammar’s production rules.
+
+Everyone creates a calculator to begin their programming journey, however I wanted my calculator to be one that understands algebraic notation. My calculator follows this grammar's production rules:
 
 ```
 // Expression Structure    
@@ -41,10 +43,15 @@ After removing left-recursion and tokenization of the grammar, we are left with 
 <atom> ::= OPERAND | FUNCTION PARENTHESES(<) <expression> PARENTHESES(>) | PARENTHESES(<) <expression> PARENTHESES(>)
 ```
 
+## Dependencies
+* The only dependency to use this program is `gcc`
+
 ## Usage
-To use this calculator, compile the program, execute the output binary, and input a valid expression you would like computed.  
-Some examples of this could be:
-- (2 + 2) * (3 + 3)
-- 9^(4 * sin(90))
-- sin(45) * cos(45)
+To use this calculator follow the steps outlined below:
+* Compile the program using `gcc ./source/main.c ./source/parser.c ./source/mylib.c -lm -Wno-builtin-declaration-mismatch`
+* Execute the binary produced `./a.out`
+* Finally, input a valid expression you would like computed. Some example may include:  
+  - (2 + 2) * (3 + 3)
+  - 9^(4 * sin(90))
+  - sin(45)^2 * cos(45)^2
 
