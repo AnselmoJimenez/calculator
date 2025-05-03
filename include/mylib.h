@@ -1,9 +1,9 @@
-double atof(char *);
+double atof(const char *);
 
-int strcmp(char *, char *);
-int strlen(char *);
+int strcmp(const char *, const char *);
+int strlen(const char *);
 
-int isspace(char);
-int isdigit(char);
-int isalpha(char);
-int isalnum(char);
+int isspace(const char);
+int isdigit(const char);
+int isalpha(const char);
+int isalnum(const char);
