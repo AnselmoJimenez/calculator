@@ -6,8 +6,7 @@ double atof(const char *s) {
     int power = 1;
     short sign = 0;
 
-    while (isspace(*s++))
-        ;
+    while (isspace(*s)) s++;
     
     sign = (*s == '-') ? -1 : 1;
     if (*s == '-' || *s == '+') s++;
