@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <math.h>
 
 #include "../include/parser.h"
 #include "../include/mylib.h"

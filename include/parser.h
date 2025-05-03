@@ -1,6 +1,3 @@
-
-#include <math.h>
-
 #define MAXTOKENLEN 50
 
 double expr(void);
