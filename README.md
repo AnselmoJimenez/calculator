@@ -1,6 +1,13 @@
 # Algebraic Calculator
 > The classic first program everyone builds but with a twist
 
+## Features
+- Supports algebraic notation with implicit multiplication
+- Built-in mathematical functions (sin, cos, tan, sqrt)
+- Proper order of operations following mathematical conventions
+- Handles negative numbers and parentheses correctly
+- Recursive descent parser implementation
+
 ## Outline
 I chose to create this project to explore **Extended BNF Notation** for grammars and **Recursive Descent Parsing** of strings. A recursive descent parser is a top-down parser that processes input based on a set of recursive functions, where each function corresponds to a grammar rule. It parses the input from left to right, constructing a parse tree by matching the grammar’s production rules.
 
@@ -44,14 +51,18 @@ After removing left-recursion and tokenization of the grammar, we are left with 
 ```
 
 ## Dependencies
-* The only dependency to use this program is `gcc`
+* `gcc` (GNU Compiler Collection)
+* `math.h` library (included with most C compilers)
+* Linux/Unix-like environment (for compilation commands)
 
 ## Usage
 To use this calculator follow the steps outlined below:
 * Compile the program using `gcc ./source/main.c ./source/parser.c ./source/mylib.c -lm -Wno-builtin-declaration-mismatch`
 * Execute the binary produced `./a.out`
 * Finally, input a valid expression you would like computed. Some example may include:  
-  - (2 + 2) * (3 + 3)
-  - 9^(4 * sin(90))
-  - sin(45)^2 * cos(45)^2
+  - Basic arithmetic: `(2 + 2) * (3 + 3) = 24`
+  - Exponents: `9^(4 * sin(90)) = 9^4 = 6561`
+  - Trigonometry (In Radians): `sin(45)^2 * cos(45)^2 = 0.1998`
+  - Implicit multiplication: `2sin(45) + 3cos(45) = 3.2778`
+  - Nested functions: `sqrt(sin(45)^2 + cos(45)^2) = 1`
 
