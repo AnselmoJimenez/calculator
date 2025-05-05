@@ -104,8 +104,8 @@ double atom(void) {
     }
 }
 
-enum funcs { SIN, COS, TAN, SQRT, INVALID };
-static const char *supported[] = { "sin", "cos", "tan", "sqrt" };
+enum funcs { SIN, COS, TAN, ASIN, ACOS, ATAN, SQRT, ABS, LN, LOG, EXP, FLOOR, CEIL, INVALID };
+static const char *supported[] = { "sin", "cos", "tan", "asin", "acos", "atan", "sqrt", "abs", "ln", "log", "exp", "floor", "ceil" };
 
 double function(void) {
     // Check that input function is valid
@@ -130,8 +130,35 @@ double function(void) {
         case TAN: 
             result = tan(expr());
             break;
+        case ASIN:
+            result = asin(expr());
+            break;
+        case ACOS:
+            result = acos(expr());
+            break;
+        case ATAN:
+            result = atan(expr());
+            break;
         case SQRT: 
             result = sqrtf(expr());
+            break;
+        case ABS:
+            result = myabs(expr());
+            break;
+        case LN:
+            result = log(expr());
+            break;
+        case LOG:
+            result = log10(expr());
+            break;
+        case EXP:
+            result = exp(expr());
+            break;
+        case FLOOR:
+            result = floor(expr());
+            break;
+        case CEIL:
+            result = ceil(expr());
             break;
     }
 
