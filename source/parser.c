@@ -52,7 +52,7 @@ double termtail(double prev) {
         return termtail(prev / factor());
     }
     else if (current.token[0] == '(' || current.tokentype == OPERAND || current.tokentype == FUNCTION)
-        return prev * factor();
+        return termtail(prev * factor());
     else {
         ungets(current.token);
         return prev;
@@ -191,9 +191,18 @@ int gettoken(void) {
         }
         *tp++ = c = next;
     }
-    else if (c == '+' || c == '*' || c == '/')  return current.tokentype = OPERATION;
-    else if (c == ')' || c == '(')              return current.tokentype = PARENTHESES;
-    else if (c == '^')                          return current.tokentype = EXPONENT;
+    else if (c == '+') {
+        if (!isdigit(next = getch())) { // Check for arithmetic operation or positive number
+            ungetch(next);
+            *tp = '\0';
+            return current.tokentype = OPERATION;
+        }
+        --tp;
+        *tp++ = c = next;
+    } 
+    else if (c == '*' || c == '/')  return current.tokentype = OPERATION;
+    else if (c == ')' || c == '(')  return current.tokentype = PARENTHESES;
+    else if (c == '^')              return current.tokentype = EXPONENT;
 
     if (isdigit(c)) {
         for ( ; isdigit(c = getch()); *tp++ = c)
