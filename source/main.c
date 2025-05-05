@@ -8,7 +8,7 @@ int main(void) {
 
         char t;
         if ((t = gettoken()) == '\n' || t == EOF)
-            printf("\t= %.4lf\n", result);
+            printf("\t= %.6g\n", result);
     }
     return 0;
 }
