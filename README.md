@@ -40,7 +40,7 @@ After removing left-recursion and tokenization of the grammar, we are left with 
 <expression-tail> ::= OPERATION(+) <term> <expression-tail> | OPERATION(-) <term> <expression-tail> | ε
 
 <term> ::= <factor> <term-tail>
-<term-tail> ::= OPERATION(*) <factor> <term-tail> | OPERATION(/) <factor> <term-tail> | <factor> <factor> | ε
+<term-tail> ::= OPERATION(*) <factor> <term-tail> | OPERATION(/) <factor> <term-tail> | <factor> <factor> <term-tail> | ε
 
 <factor> ::= <power> | OPERATION(-) <factor>
 
@@ -66,3 +66,6 @@ To use this calculator follow the steps outlined below:
   - Implicit multiplication: `2sin(45) + 3cos(45) = 3.2778`
   - Nested functions: `sqrt(sin(45)^2 + cos(45)^2) = 1`
 
+## ToDo
+Future implementations require:
+* Better error handling
