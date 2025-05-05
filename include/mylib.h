@@ -1,4 +1,5 @@
 double atof(const char *);
+double myabs(double);
 
 int strcmp(const char *, const char *);
 int strlen(const char *);

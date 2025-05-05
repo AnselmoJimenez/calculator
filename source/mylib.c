@@ -24,6 +24,12 @@ double atof(const char *s) {
     return sign * n / power;
 }
 
+// myabs : My absolute value function. Returns absolute value of the double parameter
+double myabs(double n) {
+    if (n < 0) return -1 * n;
+    else return n;
+}
+
 // strcmp : return 0 if s1 = s2 and return non-zero if s1 != s2
 int strcmp(const char *s1, const char *s2) {
     for ( ; *s1 == *s2; s1++, s2++)
