@@ -5,7 +5,9 @@
 int main(void) {
     while (gettoken() != EOF) {
         double result = expr();
-        if (gettoken() == '\n')
+
+        char t;
+        if ((t = gettoken()) == '\n' || t == EOF)
             printf("\t= %.4lf\n", result);
     }
     return 0;
