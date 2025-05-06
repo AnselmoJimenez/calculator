@@ -4,7 +4,7 @@
 #include "../include/parser.h"
 #include "../include/mylib.h"
 
-enum types { UNKNOWN, PARENTHESES, OPERAND, OPERATION, EXPONENT, FUNCTION, END};
+enum types { UNKNOWN, PARENTHESES, OPERAND, OPERATION, EXPONENT, FUNCTION, END };
 
 struct tokeninfo {
     char token[MAXTOKENLEN];
@@ -45,7 +45,7 @@ double termtail(double prev) {
     gettoken();
     if (current.token[0] == '*') {
         gettoken();
-        return termtail(prev * factor()); 
+        return termtail(prev * factor());
     }
     else if (current.token[0] == '/') {
         gettoken();
@@ -90,22 +90,27 @@ double atom(void) {
         case OPERAND: return atof(current.token);
         case FUNCTION: return function();
         case PARENTHESES:
-            if (current.token[0] == '(') {
-                gettoken();
-                double result = expr();
-                
-                gettoken();
-                if (current.token[0] != ')') {
-                    return -1;
-                }
-
-                return result;
+            if (current.token[0] != '(') {
+                printf("Atom Error: Unopened Parenthesis");
+                return -1;
             }
+            gettoken();
+            double result = expr();
+            
+            gettoken();
+            if (current.token[0] != ')') {
+                printf("Atom Error: Unclosed Parenthesis");
+                return -1;
+            }
+
+            return result;
     }
 }
 
 enum funcs { SIN, COS, TAN, ASIN, ACOS, ATAN, SQRT, ABS, LN, LOG, EXP, FLOOR, CEIL, INVALID };
-static const char *supported[] = { "sin", "cos", "tan", "asin", "acos", "atan", "sqrt", "abs", "ln", "log", "exp", "floor", "ceil" };
+static const char *supported[] = { 
+    "sin", "cos", "tan", "asin", "acos", "atan", "sqrt", "abs", "ln", "log", "exp", "floor", "ceil"
+};
 
 double function(void) {
     // Check that input function is valid
@@ -113,58 +118,40 @@ double function(void) {
     for (i; i < INVALID; i++)
         if (strcmp(current.token, supported[i]) == 0)
             break;
-    if (i == INVALID) return -1;
+    if (i == INVALID) {
+        printf("Function Error: Unrecognized Function");
+        return -1;
+    }
 
     gettoken();
-    if (current.token[0] != '(') return -1;
+    if (current.token[0] != '(') {
+        printf("Function Error: Unopened Parenthesis");
+        return -1;
+    }
 
     gettoken();
     double result = 0;
     switch (i) {
-        case SIN: 
-            result = sin(expr());
-            break;
-        case COS: 
-            result = cos(expr());
-            break;
-        case TAN: 
-            result = tan(expr());
-            break;
-        case ASIN:
-            result = asin(expr());
-            break;
-        case ACOS:
-            result = acos(expr());
-            break;
-        case ATAN:
-            result = atan(expr());
-            break;
-        case SQRT: 
-            result = sqrtf(expr());
-            break;
-        case ABS:
-            result = myabs(expr());
-            break;
-        case LN:
-            result = log(expr());
-            break;
-        case LOG:
-            result = log10(expr());
-            break;
-        case EXP:
-            result = exp(expr());
-            break;
-        case FLOOR:
-            result = floor(expr());
-            break;
-        case CEIL:
-            result = ceil(expr());
-            break;
+        case SIN:   result = sin(expr()); break;
+        case COS:   result = cos(expr()); break;
+        case TAN:   result = tan(expr()); break;
+        case ASIN:  result = asin(expr()); break;
+        case ACOS:  result = acos(expr()); break;
+        case ATAN:  result = atan(expr()); break;
+        case SQRT:  result = sqrtf(expr()); break;
+        case ABS:   result = myabs(expr()); break;
+        case LN:    result = log(expr()); break;
+        case LOG:   result = log10(expr()); break;
+        case EXP:   result = exp(expr()); break;
+        case FLOOR: result = floor(expr()); break;
+        case CEIL:  result = ceil(expr()); break;
     }
 
     gettoken();
-    if (current.token[0] != ')') return -1;
-
+    if (current.token[0] != ')') {
+        printf("Function Error: Unclosed Parenthesis");
+        return -1;
+    }
     return result;
 }
 
