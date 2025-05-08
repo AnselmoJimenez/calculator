@@ -3,10 +3,11 @@
 #include "../include/parser.h"
 
 int main(void) {
-    while (gettoken() != EOF) {
+    char t;
+    while ((t = gettoken()) != EOF) {
+        if (t == '\n') continue;
         double result = expr();
 
-        char t;
         if ((t = gettoken()) == '\n' || t == EOF)
             printf("\t= %.6g\n", result);
     }

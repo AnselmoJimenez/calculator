@@ -15,7 +15,7 @@ struct tokeninfo {
 };
 
 void ungets(char *);
-void printstack(void);
+void recover(void);
 
 double expr(void) {
     return exprtail(term());
@@ -91,15 +91,25 @@ double atom(void) {
         case FUNCTION: return function();
         case PARENTHESES:
             if (current.token[0] != '(') {
-                printf("Atom Error: Unopened Parenthesis");
+                printf("Atom Error: Unopened Parenthesis\n");
+                recover();
                 return -1;
             }
+
             gettoken();
+            if (current.token[0] == ')') {
+                printf("Atom Error: Empty Parentheses\n");
+                recover();
+                return -1;
+            }
+
             double result = expr();
             
             gettoken();
             if (current.token[0] != ')') {
-                printf("Atom Error: Unclosed Parenthesis");
+                printf("Atom Error: Unclosed Parenthesis\n");
+                ungets(current.token);
+                recover();
                 return -1;
             }
 
@@ -119,13 +129,15 @@ double function(void) {
         if (strcmp(current.token, supported[i]) == 0)
             break;
     if (i == INVALID) {
-        printf("Function Error: Unrecognized Function");
+        printf("Function Error: Unrecognized Function\n");
+        recover();
         return -1;
     }
 
     gettoken();
     if (current.token[0] != '(') {
-        printf("Function Error: Unopened Parenthesis");
+        printf("Function Error: Unopened Parenthesis\n");
+        recover();
         return -1;
     }
 
@@ -149,10 +161,22 @@ double function(void) {
 
     gettoken();
     if (current.token[0] != ')') {
-        printf("Function Error: Unclosed Parenthesis");
+        printf("Function Error: Unclosed Parenthesis\n");
+        recover();
         return -1;
     }
     return result;
+}
+
+// Recover : Recover from a syntax error
+void recover(void) {
+    char token = '\0';
+    while ((token = gettoken()) != '\n' && token != EOF) {
+        printf("Stuck\n");
+    }
+    
+    if (token == '\n' || token == EOF)
+        ungets(current.token);
 }
 
 int getch(void);
@@ -239,13 +263,13 @@ int getch(void) {
 
 // ungetch : push a character back on to the input
 void ungetch(int c) {
-    if (cbuffer + MAXBUFFER <= cbp) printf("ungetch: Overflow Error: Stack is full");
+    if (cbuffer + MAXBUFFER <= cbp) printf("ungetch: Overflow Error: Stack is full\n");
     else *cbp++ = c;
 }
 
 // ungets : push a string back on to the input
 void ungets(char *s) {
-    if (cbp + strlen(s) > cbuffer + MAXBUFFER) printf("ungets: Overflow Error: Stack is full");
+    if (cbp + strlen(s) > cbuffer + MAXBUFFER) printf("ungets: Overflow Error: Stack is full\n");
     else {
         int length = strlen(s);
         s += length - 1;
