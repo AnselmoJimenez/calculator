@@ -10,4 +10,5 @@ double powertail(double);
 double atom(void);
 double function(void);
 
+void recover(void);
 int gettoken(void);
