@@ -16,20 +16,31 @@ struct tokeninfo {
 
 void ungets(char *);
 void recover(void);
+int checkerror(char *);
 
 double expr(void) {
-    return exprtail(term());
+    double result = exprtail(term());
+
+    if (current.tokentype != END) {
+        printf("Expr: Syntax Error\n");
+        recover();
+        return -1;
+    }
+
+    return result;
 }
 
 double exprtail(double prev) {
     gettoken();
     if (current.token[0] == '+') {
-        gettoken();    
-        return exprtail(prev + term());
+        gettoken();
+        if (checkerror("exprtail")) return -1;
+        else return exprtail(prev + term());
     }
     else if (current.token[0] == '-') {
-        gettoken();   
-        return exprtail(prev - term());
+        gettoken();
+        if (checkerror("exprtail")) return -1;
+        else return exprtail(prev - term());
     }
     else {
         ungets(current.token);
@@ -45,11 +56,13 @@ double termtail(double prev) {
     gettoken();
     if (current.token[0] == '*') {
         gettoken();
-        return termtail(prev * factor());
+        if (checkerror("termtail")) return -1;
+        else return termtail(prev * factor());
     }
     else if (current.token[0] == '/') {
         gettoken();
-        return termtail(prev / factor());
+        if (checkerror("termtail")) return -1;
+        else return termtail(prev / factor());
     }
     else if (current.token[0] == '(' || current.tokentype == OPERAND || current.tokentype == FUNCTION)
         return termtail(prev * factor());
@@ -65,7 +78,8 @@ double factor(void) {
     
     if (current.tokentype == OPERATION && current.token[0] == '-') {
         gettoken();
-        return -1 * factor();
+        if (checkerror("factor")) return -1;
+        else return -1 * factor();
     }
 }
 
@@ -77,7 +91,8 @@ double powertail(double prev) {
     gettoken();
     if (current.token[0] == '^') {
         gettoken();
-        return pow(prev, factor());
+        if (checkerror("powertail")) return -1;
+        else return pow(prev, factor());
     }
     else {
         ungets(current.token);
@@ -91,14 +106,14 @@ double atom(void) {
         case FUNCTION: return function();
         case PARENTHESES:
             if (current.token[0] != '(') {
-                printf("Atom Error: Unopened Parenthesis\n");
+                printf("Atom: Syntax Error: Unopened Parenthesis\n");
                 recover();
                 return -1;
             }
 
             gettoken();
             if (current.token[0] == ')') {
-                printf("Atom Error: Empty Parentheses\n");
+                printf("Atom: Syntax Error: Empty Parenthesis\n");
                 recover();
                 return -1;
             }
@@ -107,7 +122,7 @@ double atom(void) {
             
             gettoken();
             if (current.token[0] != ')') {
-                printf("Atom Error: Unclosed Parenthesis\n");
+                printf("Atom: Syntax Error: Unclosed Parenthesis\n");
                 ungets(current.token);
                 recover();
                 return -1;
@@ -129,14 +144,14 @@ double function(void) {
         if (strcmp(current.token, supported[i]) == 0)
             break;
     if (i == INVALID) {
-        printf("Function Error: Unrecognized Function\n");
+        printf("Syntax Error: Unrecognized Function\n");
         recover();
         return -1;
     }
 
     gettoken();
     if (current.token[0] != '(') {
-        printf("Function Error: Unopened Parenthesis\n");
+        printf("Function: Syntax Error: Unopened Parenthesis\n");
         recover();
         return -1;
     }
@@ -144,24 +159,24 @@ double function(void) {
     gettoken();
     double result = 0;
     switch (i) {
-        case SIN:   result = sin(expr()); break;
-        case COS:   result = cos(expr()); break;
-        case TAN:   result = tan(expr()); break;
-        case ASIN:  result = asin(expr()); break;
-        case ACOS:  result = acos(expr()); break;
-        case ATAN:  result = atan(expr()); break;
+        case SIN:   result = sin(expr());   break;
+        case COS:   result = cos(expr());   break;
+        case TAN:   result = tan(expr());   break;
+        case ASIN:  result = asin(expr());  break;
+        case ACOS:  result = acos(expr());  break;
+        case ATAN:  result = atan(expr());  break;
         case SQRT:  result = sqrtf(expr()); break;
         case ABS:   result = myabs(expr()); break;
-        case LN:    result = log(expr()); break;
+        case LN:    result = log(expr());   break;
         case LOG:   result = log10(expr()); break;
-        case EXP:   result = exp(expr()); break;
+        case EXP:   result = exp(expr());   break;
         case FLOOR: result = floor(expr()); break;
-        case CEIL:  result = ceil(expr()); break;
+        case CEIL:  result = ceil(expr());  break;
     }
-
+    
     gettoken();
     if (current.token[0] != ')') {
-        printf("Function Error: Unclosed Parenthesis\n");
+        printf("Function: Syntax Error: Unclosed Parenthesis\n");
         recover();
         return -1;
     }
@@ -171,12 +186,20 @@ double function(void) {
 // Recover : Recover from a syntax error
 void recover(void) {
     char token = '\0';
-    while ((token = gettoken()) != '\n' && token != EOF) {
-        printf("Stuck\n");
-    }
-    
-    if (token == '\n' || token == EOF)
+    while ((token = gettoken()) != '\n' && token != EOF) 
+        ;
+    if (token == '\n' || token == EOF) ungets(current.token);
+}
+
+// checkerror : return nonzero value if an error is found on the tokentype
+int checkerror(char *funcname) {
+    if (current.tokentype != OPERAND || current.tokentype != FUNCTION || current.tokentype != PARENTHESES) {
+        printf("%s: Syntax Error\n", funcname);
         ungets(current.token);
+        recover();
+        return 1;
+    }
+    return 0;
 }
 
 int getch(void);
@@ -247,6 +270,10 @@ int gettoken(void) {
         return current.tokentype = FUNCTION;
     }
 
+    if (c == '\n') {
+        current.tokentype = END;
+        return c;
+    }
     current.tokentype = UNKNOWN;
     return c;
 }
