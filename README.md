@@ -66,6 +66,10 @@ To use this calculator follow the steps outlined below:
   - Implicit multiplication: `2sin(45) + 3cos(45) = 3.2778`
   - Nested functions: `sqrt(sin(45)^2 + cos(45)^2) = 1`
 
+## Challenges Faced
+* Debugging is troublesome as many times I found myself writing out the recursive steps to track where the program was going wrong.
+* Error handling within the recursive functions is difficult as it is easy to get lost in the recursion.
+
 ## ToDo
 Future implementations require:
 * Better error handling
