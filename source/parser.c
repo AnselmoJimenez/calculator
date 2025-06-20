@@ -16,31 +16,20 @@ struct tokeninfo {
 
 void ungets(char *);
 void recover(void);
-int checkerror(char *);
 
 double expr(void) {
-    double result = exprtail(term());
-
-    if (current.tokentype != END) {
-        printf("Expr: Syntax Error\n");
-        recover();
-        return -1;
-    }
-
-    return result;
+    return exprtail(term());
 }
 
 double exprtail(double prev) {
     gettoken();
     if (current.token[0] == '+') {
         gettoken();
-        if (checkerror("exprtail")) return -1;
-        else return exprtail(prev + term());
+        return exprtail(prev + term());
     }
     else if (current.token[0] == '-') {
         gettoken();
-        if (checkerror("exprtail")) return -1;
-        else return exprtail(prev - term());
+        return exprtail(prev - term());
     }
     else {
         ungets(current.token);
@@ -56,13 +45,11 @@ double termtail(double prev) {
     gettoken();
     if (current.token[0] == '*') {
         gettoken();
-        if (checkerror("termtail")) return -1;
-        else return termtail(prev * factor());
+        return termtail(prev * factor());
     }
     else if (current.token[0] == '/') {
         gettoken();
-        if (checkerror("termtail")) return -1;
-        else return termtail(prev / factor());
+        return termtail(prev / factor());
     }
     else if (current.token[0] == '(' || current.tokentype == OPERAND || current.tokentype == FUNCTION)
         return termtail(prev * factor());
@@ -78,8 +65,7 @@ double factor(void) {
     
     if (current.tokentype == OPERATION && current.token[0] == '-') {
         gettoken();
-        if (checkerror("factor")) return -1;
-        else return -1 * factor();
+        return -1 * factor();
     }
 }
 
@@ -91,8 +77,7 @@ double powertail(double prev) {
     gettoken();
     if (current.token[0] == '^') {
         gettoken();
-        if (checkerror("powertail")) return -1;
-        else return pow(prev, factor());
+        return pow(prev, factor());
     }
     else {
         ungets(current.token);
@@ -129,6 +114,9 @@ double atom(void) {
             }
 
             return result;
+        default:
+            printf("Error: Atom: Unrecognized tokentype");
+            return 0.0;
     }
 }
 
@@ -189,17 +177,6 @@ void recover(void) {
     while ((token = gettoken()) != '\n' && token != EOF) 
         ;
     if (token == '\n' || token == EOF) ungets(current.token);
-}
-
-// checkerror : return nonzero value if an error is found on the tokentype
-int checkerror(char *funcname) {
-    if (current.tokentype != OPERAND || current.tokentype != FUNCTION || current.tokentype != PARENTHESES) {
-        printf("%s: Syntax Error\n", funcname);
-        ungets(current.token);
-        recover();
-        return 1;
-    }
-    return 0;
 }
 
 int getch(void);
